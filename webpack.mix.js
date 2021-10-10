@@ -17,7 +17,7 @@ mix.js('resources/js/app.js', 'public/js').vue()
         require('postcss-import'),
         require('tailwindcss'),
     ])
-
+    .sourceMaps('abx')
     .webpackConfig(require('./webpack.config'))
     .browserSync('reservation04102021.test')
     .disableNotifications();

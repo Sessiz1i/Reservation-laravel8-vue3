@@ -22,16 +22,21 @@
                                     <jet-label for="date">
                                         {{ labelDate }}
                                     </jet-label>
-                                    <jet-input v-model="form.date" type="date" :min="now" class="mt-1 w-full" id="date" autocomplete="date"/>
+                                    <jet-input @change.prevent="selectDate" v-model="form.date" type="date" :min="now" class="mt-1 w-full" id="date" autocomplete="date"/>
                                     <input-error :message="form.errors.date" class="mt-2"/>
                                 </div>
                             </div>
-                            <div class="flex flex-wrap lg:justify-between my-1.5">
+                            <div class="flex flex-wrap justify-between my-1.5">
                                 <div v-for="item in hours" :key="item" class="my-2 mr-2 sm:mr-0 focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50">
-                                    <label :for="`hour-${item.id}`"
-                                           class="py-1.5 px-2 text-sm border border-gray-300 rounded-md shadow-sm hover:border-indigo-300 hover:ring hover:ring-indigo-200 hover:ring-opacity-50">
-                                        <input v-model="form.hour" type="checkbox" :value="item.hours" :id="`hour-${item.id}`"
-                                               class="mb-1 rounded border-gray-300 text-indigo-600 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"/>
+                                    <label :for="`hour-${item.id}`" class="py-1.5 px-2 text-sm border border-gray-300 rounded-md hover: shadow-sm"
+                                           :role="item?.isActive ? 'button' :null"
+                                           :class="!item?.isActive ? 'bg-gray-200 line-through' : 'hover:border-indigo-300 hover:ring hover:ring-indigo-200 hover:ring-opacity-50'">
+                                        <input v-model="form.hour"
+                                               type="checkbox"
+                                               class="mb-1 rounded border-gray-300 text-indigo-600 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
+                                               :value="item.hours" :id="`hour-${item.id}`"
+                                               v-bind="{'disabled' : !item?.isActive}"
+                                               :class="!item?.isActive ? 'bg-gray-200' : 'hover:border-indigo-300 hover:ring hover:ring-indigo-200 hover:ring-opacity-50'"/>
                                         {{ item.hours }}</label>
                                 </div>
                             </div>
@@ -41,8 +46,7 @@
                                 <div class="col-span-12 sm:col-span-12">
                                     <jet-label for="name" value="Notes"/>
                                     <textarea v-model="form.notes" type="text" id="name" rows="3"
-                                              class="w-full border-gray-300 focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50 rounded-md shadow-sm">
-                    </textarea>
+                                              class="w-full border-gray-300 focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50 rounded-md shadow-sm"></textarea>
                                 </div>
                                 <!-- Name -->
                                 <div class="col-span-12 sm:col-span-3">
@@ -107,35 +111,42 @@ export default defineComponent({
         InputError, ValidationErrors, SecondaryButton, DangerButton, Logo, JetApplicationMark, AppLayout,
         JetInput, JetButton, JetLabel, JetCheckbox, Welcome,
     },
-    props: ['user', 'hours'],
-    created() {
-        this.now = moment().format('YYYY-MM-DD')
-        this.form.date = moment().format('YYYY-MM-DD')
+    props: ['user', 'hours', 'date'],
+    mounted() {
+        console.log(this.form)
     },
     data() {
         return {
+            now: moment().format('YYYY-MM-DD'),
+            bool: '',
             form: this.$inertia.form({
-                user_id: this.user.id, date: '', hour: [], notes: '', bool: ''
+                user_id: this.user.id,
+                date: this.date,
+                hour: [],
+                notes: '',
+
             })
         }
-    },
-    updated() {
-        console.log(this.form)
     },
     methods: {
         submit() {
             this.form.post(this.route('reservation.store'), {
                 onSuccess: () => {
                     this.form.reset("date", "hour", "notes")
-                    this.form.date = this.now
+                    this.form.date = this.date
                     this.bool = false
                 },
                 preserveScroll: this.bool // sayfa yukarı kaydırıldı
-
             })
-
+        },
+        selectDate() {
+            this.$inertia.get(this.route('reservation.show', this.form.date), {
+                onSuccess: () => {
+                    this.form.date =this.date
+                    console.log('başarılı')
+                },
+            })
         }
-
     },
     computed: {
         labelDate() {

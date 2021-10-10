@@ -16,28 +16,29 @@ class ReservationController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index(Request $request)
+    public function index()
     {
-
-
         $items = Reservation::whereUserId(auth()->user()->id)->paginate(5);
         $items = json_decode(json_encode($items), 1);
-        return Inertia::render('Reservation',['items'=> $items]);
-////get the data for the map list page
-//        $data = Reservation::whereUserId(auth()->user()->id)->paginate(5);
-//        $data = json_decode(json_encode($data), 1);
-//        //Edit This for your requirements
-//        return Inertia::render('Reservation', ['pageData' => $data]);
+        return Inertia::render('Reservation', ['items' => $items]);
     }
 
     /**
      * Show the form for creating a new resource.
      *
-     * @return \Inertia\Response
+     * @return \Illuminate\Http\Response
      */
     public function create()
     {
-        $resData = ReservationHours::all();
+
+        $date = $date ?? date("Y-m-d");
+        $resData = [];
+        $hours = ReservationHours::all();
+        foreach ($hours as $k => $v) {
+            $control = Reservation::where('date', $date)->whereJsonContains('hour', $v['hours'])->count();
+            $v['isActive'] = ($control) ? false : true;
+            $resData[] = $v;
+        }
         return Inertia::render('_Back/Reservation/CreateReservation', ['hours' => $resData]);
     }
 
@@ -49,7 +50,6 @@ class ReservationController extends Controller
      */
     public function store(Request $request)
     {
-
         Validator::make($request->post(), [
             'user_id' => ['required'],
             'date' => ['required', 'min:today'],
@@ -61,50 +61,58 @@ class ReservationController extends Controller
             "hour" => json_encode($request->hour),
             "nots" => $request->nots
         ]);
-        return redirect()->route('reservation.create');
+        return redirect()->back();
     }
 
     /**
      * Display the specified resource.
      *
-     * @param \App\Models\_Back\Reservation $reservation
+     * @param $date
      * @return \Illuminate\Http\Response
      */
-    public function show(Reservation $reservation)
+    public function show($date)
     {
-        //
+        $date = $date ?? date("Y-m-d");
+        $resData = [];
+        $hours = ReservationHours::all();
+        foreach ($hours as $k => $v) {
+            $control = Reservation::where('date', $date)->whereJsonContains('hour', $v['hours'])->count();
+            $v['isActive'] = ($control) ? false : true;
+            $resData[] = $v;
+        }
+        return Inertia::render('_Back/Reservation/CreateReservation', ['hours' => $resData,'date' => $date]);
     }
 
     /**
      * Show the form for editing the specified resource.
      *
-     * @param \App\Models\_Back\Reservation $reservation
+     * @param int $id
      * @return \Illuminate\Http\Response
      */
-    public function edit(Reservation $reservation)
+    public function edit($id)
     {
-        //
+        return "Edit";
     }
 
     /**
      * Update the specified resource in storage.
      *
      * @param \Illuminate\Http\Request $request
-     * @param \App\Models\_Back\Reservation $reservation
+     * @param int $id
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, Reservation $reservation)
+    public function update(Request $request, $id)
     {
-        //
+        return "Edit";
     }
 
     /**
      * Remove the specified resource from storage.
      *
-     * @param \App\Models\_Back\Reservation $reservation
+     * @param int $id
      * @return \Illuminate\Http\Response
      */
-    public function destroy(Reservation $reservation)
+    public function destroy($id)
     {
         //
     }

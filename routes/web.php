@@ -23,11 +23,14 @@ Route::get('/', function () {
         'laravelVersion' => Application::VERSION,
         'phpVersion' => PHP_VERSION,
     ]);
-});
+})->name('welcome');
 
 
 Route::middleware(['auth:sanctum', 'verified'])->group(function () {
-    Route::resource('/reservation',ReservationController::class);
+
+    Route::resource('/reservation', ReservationController::class);
+
+
 //    Route::get('/create/reservation', [ReservationController::class, 'create'])->name('create');
 //    Route::post('/store/reservation', [ReservationController::class, 'store'])->name('store');
 
