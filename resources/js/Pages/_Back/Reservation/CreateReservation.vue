@@ -112,9 +112,6 @@ export default defineComponent({
         JetInput, JetButton, JetLabel, JetCheckbox, Welcome,
     },
     props: ['user', 'hours', 'date'],
-    mounted() {
-        console.log(this.form)
-    },
     data() {
         return {
             now: moment().format('YYYY-MM-DD'),
@@ -143,7 +140,6 @@ export default defineComponent({
             this.$inertia.get(this.route('reservation.show', this.form.date), {
                 onSuccess: () => {
                     this.form.date =this.date
-                    console.log('başarılı')
                 },
             })
         }

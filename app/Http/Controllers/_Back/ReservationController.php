@@ -30,16 +30,7 @@ class ReservationController extends Controller
      */
     public function create()
     {
-
-        $date = $date ?? date("Y-m-d");
-        $resData = [];
-        $hours = ReservationHours::all();
-        foreach ($hours as $k => $v) {
-            $control = Reservation::where('date', $date)->whereJsonContains('hour', $v['hours'])->count();
-            $v['isActive'] = ($control) ? false : true;
-            $resData[] = $v;
-        }
-        return Inertia::render('_Back/Reservation/CreateReservation', ['hours' => $resData]);
+        //
     }
 
     /**
@@ -77,10 +68,10 @@ class ReservationController extends Controller
         $hours = ReservationHours::all();
         foreach ($hours as $k => $v) {
             $control = Reservation::where('date', $date)->whereJsonContains('hour', $v['hours'])->count();
-            $v['isActive'] = ($control) ? false : true;
+            $v['isActive'] = $control ? false : true;
             $resData[] = $v;
         }
-        return Inertia::render('_Back/Reservation/CreateReservation', ['hours' => $resData,'date' => $date]);
+        return Inertia::render('_Back/Reservation/CreateReservation', ['hours' => $resData, 'date' => $date]);
     }
 
     /**
@@ -91,7 +82,6 @@ class ReservationController extends Controller
      */
     public function edit($id)
     {
-        return "Edit";
     }
 
     /**
@@ -103,7 +93,8 @@ class ReservationController extends Controller
      */
     public function update(Request $request, $id)
     {
-        return "Edit";
+        //
+
     }
 
     /**

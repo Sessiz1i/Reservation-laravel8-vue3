@@ -9,8 +9,7 @@
         <div class="py-12">
             <div class="max-w-5xl mx-auto sm:px-6 lg:px-8">
                 <div class=" bg-white overflow-hidden shadow-2xl sm:rounded-3xl border border-gray-200">
-                    <table-reservation :items="this.items"
-                                       :user="this.user"/>
+                    <table-reservation/>
                 </div>
             </div>
         </div>
@@ -24,7 +23,6 @@ import Welcome from '@/Jetstream/Welcome.vue'
 import TableReservation from "@/Pages/Components/TableReservation";
 
 export default defineComponent({
-    props:['user','items'],
     components: {
         TableReservation,
         AppLayout,
