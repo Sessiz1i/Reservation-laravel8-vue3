@@ -1,5 +1,5 @@
 <template>
-    <paginate class="border-t"/>
+    <paginate />
     <div class="flex flex-col">
         <div class="-my-2 overflow-x-auto sm:-mx-6 lg:-mx-8">
             <div class="py-2 align-middle inline-block min-w-full sm:px-6 lg:px-8">
@@ -53,25 +53,18 @@
 <script>
 import moment from "moment/moment";
 import Paginate from "@/Pages/Components/Paginate";
+import {defineComponent} from "vue";
 
-export default {
+export default defineComponent({
     components: {
         Paginate,
     },
-    created() {
-        this.items = this.$page.props.items
-        this.user = this.$page.props.user
-    },
-    data() {
-        return {
-            items: null,
-            user: null,
-        }
-    },
+    inject:["items","user"],
     methods: {
         tableDate(date) {
             return moment(date, 'LL dddd', 'tr').format('LL dddd')
         },
+
     }
-}
+})
 </script>

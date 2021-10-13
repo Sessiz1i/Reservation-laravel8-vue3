@@ -1,84 +1,74 @@
 <template>
-    <div v-if="items.links.length > 3">
-        <div class="flex items-center justify-between border-gray-200 bg-white">
-            <div class="flex-1 flex justify-between sm:hidden px-4 py-3">
-                <div v-if="items?.prev_page_url === null" class="ml-1 px-3 py-2 text-sm text-gray-400 border rounded">
-                    <span>&laquo;&nbsp;Previous</span>
-                </div>
-                <Link v-else
-                      class="ml-1 px-3 py-2 text-sm border rounded hover:bg-white hover:border-indigo-500 hover:text-indigo-500 focus:bg-white focus:border-indigo-500 focus:text-indigo-500"
-                      :href="items.prev_page_url">
-                    <span>&laquo;&nbsp;Previous</span>
-                </Link>
-                <div v-if="items?.next_page_url === null" class=" ml-1 px-3 py-2 text-sm text-gray-400 border rounded">
-                    <span>Next&nbsp;&raquo;</span>
-                </div>
-                <Link v-else
-                      class="ml-1 px-3 py-2 text-sm border rounded hover:bg-white hover:border-indigo-500 hover:text-indigo-500 focus:bg-white focus:border-indigo-500 focus:text-indigo-500"
-                      :href="items?.next_page_url">
-                    <span>Next&nbsp;&raquo;</span>
-                </Link>
-            </div>
+    <div v-if="items.links.length > 3" class="flex items-center justify-between px-5 py-3">
+        <div class="flex flex-1 justify-between sm:hidden">
+            <span v-if="!items?.prev_page_url"
+                  class="relative inline-flex items-center px-4 py-2 text-sm font-medium text-gray-500 bg-white border border-gray-300 cursor-default leading-5 rounded-md">&laquo; Previous</span>
+            <Link v-else :href="items?.prev_page_url"
+                  class="relative inline-flex items-center px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 leading-5 rounded-md hover:text-gray-500 focus:outline-none focus:ring ring-gray-300 focus:border-blue-300 active:bg-gray-100 active:text-gray-700 transition ease-in-out duration-150">
+                &laquo; Previous
+            </Link>
+<!--TODO Sayfa kaynasını engelleme-->
+            <Link v-if="items?.next_page_url" :href="items?.next_page_url" :preserveScroll="true"
+                  class="relative inline-flex items-center px-4 py-2 ml-3 text-sm font-medium text-gray-700 bg-white border border-gray-300 leading-5 rounded-md hover:text-gray-500 focus:outline-none focus:ring ring-gray-300 focus:border-blue-300 active:bg-gray-100 active:text-gray-700 transition ease-in-out duration-150">
+                Next &raquo;
+            </Link>
+            <span v-else
+                  class="relative inline-flex items-center px-4 py-2 ml-3 text-sm font-medium text-gray-500 bg-white border border-gray-300 cursor-default leading-5 rounded-md">Next &raquo;</span>
         </div>
-        <div class="hidden sm:flex sm:flex-wrap sm:justify-end px-4 py-3">&nbsp;
-            <!--TODO PAGİNATİON UZUN-->
-            <template v-for="(link, index) in items.links" :key="index">
-                <div class="flex items-center">
-                    <div v-if="link.url === null" class="ml-1 px-3 py-2 text-sm text-gray-400 border rounded">
-                        <div v-if="link.label.includes('Previous')">
-                            <span class="sr-only">Previous</span>
-                            <ChevronLeftIcon class="h-5" aria-hidden="true"/>
-                        </div>
-                        <div v-else-if="link.label.includes('Next')">
-                            <span class="sr-only">Next</span>
-                            <ChevronRightIcon class="h-5" aria-hidden="true"/>
-                        </div>
-                    </div>
-                    <div v-else>
-                        <Link v-if="((index <=5 && items.current_page <5) || index <=1) ||
-                                ((index >=items.links.length-6 && items.current_page > items.links.length-5) || index >= items.links.length-2) ||
-                                link.label == items.current_page-1|| link.label == items.current_page|| link.label == items.current_page+1 ||
-                                (link.label == items.links.length-3 && items.current_page >= items.links.length-5)"
-                              class="flex ml-1 px-3 py-2 text-sm border rounded hover:bg-white hover:border-indigo-500 hover:text-indigo-500 focus:bg-white focus:border-indigo-500 focus:text-indigo-500"
-                              :class="{ 'bg-blue-700 text-white': link.active,  'hidden sm:flex items-center' : link?.label.length < 3,'ml-1 px-3 py-2 text-sm text-gray-400 border rounded': !link.url}"
-                              :href="link.url">
-                            <div v-if="link.label.includes('Previous')">
-                                <span class="sr-only">Previous</span>
-                                <ChevronLeftIcon class="h-5" aria-hidden="true"/>
-                            </div>
-                            <div v-else-if="link.label.includes('Next')">
-                                <span class="sr-only">Next</span>
-                                <ChevronRightIcon class="h-5" aria-hidden="true"/>
-                            </div>
-                            <span v-else>{{ link.label }}</span>
-                        </Link>
-                        <div v-else-if="(link.label == 2 && items.current_page > 3) || (link.label == items.links.length-3)"
-                             class="ml-1 px-3 py-2 hidden sm:flex sm:justify-center sm:items-center text-sm text-gray-400 border rounded" v-text="'...'"/>
-                    </div>
-                </div>
-            </template>
+        <div class="hidden sm:flex-1 sm:flex sm:items-center sm:justify-between">
+            <div class="text-sm text-gray-700 leading-5">
+                <span>{{ 'Showing ' }}</span>
+                <span class="font-medium">{{ items?.from }}</span>
+                <span>{{ ' to ' }}</span>
+                <span class="font-medium">{{ items?.to }}</span>
+                <span>{{ ' of ' }}</span>
+                <span class="font-medium">{{ items?.total }}</span>
+                <span>{{ ' results' }}</span>
+            </div>
+            <div class="relative inline-flex">
+                <template v-for="(link, index) in items.links" :key="index">
+                    <div v-if="link.url === null" class="mb-1 px-4 py-2 rounded-full text-sm leading-4 text-gray-400 border"
+                         v-html="label(link.label)"/>
+                    <inertia-link v-else :preserveScroll="true"
+                                  class="mb-1 px-4 py-2 rounded-full text-sm leading-4 border hover:bg-white focus:z-10 focus:border-indigo-500 focus:text-indigo-500"
+                                  :class="{ 'bg-blue-700 border border-blue-700 hover:text-black text-white z-10': link.active }" :href="link.url" v-html="label(link.label)"/>
+                </template>
+            </div>
         </div>
     </div>
 </template>
+
 <script>
+import {Link, InertiaLink} from "@inertiajs/inertia-vue3";
+import {defineComponent} from "vue";
 
-import {Link} from "@inertiajs/inertia-vue3";
-import {ChevronLeftIcon, ChevronRightIcon} from '@heroicons/vue/solid'
-
-export default {
+export default defineComponent({
+    inject: ['items'],
     components: {
         Link,
-        ChevronLeftIcon,
-        ChevronRightIcon,
+        InertiaLink
     },
-    created() {
-      this.items= this.$page.props.items
+    data() {
+        return {
+            setLabel: null
+        }
     },
-    data(){
-        return{
-            items:null
+    methods: {
+        label(label) {
+            if (label.includes('Previous')) {
+                return `<svg class="w-4 h-4 text-gray-500" fill="currentColor" viewBox="4 3 13 13">
+                            <path fill-rule="evenodd" d="M12.707 5.293a1 1 0 010 1.414L9.414 10l3.293 3.293a1 1 0 01-1.414 1.414l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 0z"
+                            clip-rule="evenodd"/>
+                        </svg>`
+            } else if (label.includes('Next')) {
+                return `<svg class="w-4 h-4 text-gray-500" fill="currentColor" viewBox="4 3 13 13">
+                            <path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z"
+                                  clip-rule="evenodd"/>
+                        </svg>`
+            } else {
+                return label
+            }
         }
     }
-}
-
+})
 </script>

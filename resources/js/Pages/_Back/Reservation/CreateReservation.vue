@@ -29,14 +29,14 @@
                             <div class="flex flex-wrap justify-between my-1.5">
                                 <div v-for="item in hours" :key="item" class="my-2 mr-2 sm:mr-0 focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50">
                                     <label :for="`hour-${item.id}`" class="py-1.5 px-2 text-sm border border-gray-300 rounded-md hover: shadow-sm"
-                                           :role="item?.isActive ? 'button' :null"
-                                           :class="!item?.isActive ? 'bg-gray-200 line-through' : 'hover:border-indigo-300 hover:ring hover:ring-indigo-200 hover:ring-opacity-50'">
+                                           :role="!item?.isActive ? 'button' :null"
+                                           :class="item?.isActive ? 'bg-gray-200 line-through' : 'hover:border-indigo-300 hover:ring hover:ring-indigo-200 hover:ring-opacity-50'">
                                         <input v-model="form.hour"
                                                type="checkbox"
                                                class="mb-1 rounded border-gray-300 text-indigo-600 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
                                                :value="item.hours" :id="`hour-${item.id}`"
-                                               v-bind="{'disabled' : !item?.isActive}"
-                                               :class="!item?.isActive ? 'bg-gray-200' : 'hover:border-indigo-300 hover:ring hover:ring-indigo-200 hover:ring-opacity-50'"/>
+                                               v-bind="{'disabled' : item?.isActive}"
+                                               :class="item?.isActive ? 'bg-gray-200' : 'hover:border-indigo-300 hover:ring hover:ring-indigo-200 hover:ring-opacity-50'"/>
                                         {{ item.hours }}</label>
                                 </div>
                             </div>
@@ -102,7 +102,7 @@ import SecondaryButton from "@/Jetstream/SecondaryButton";
 import ValidationErrors from "@/Jetstream/ValidationErrors";
 import InputError from "@/Jetstream/InputError";
 import Welcome from "@/Jetstream/Welcome";
-import moment from "moment/moment";
+import moment from "moment";
 import 'moment/locale/tr'
 
 
@@ -114,7 +114,7 @@ export default defineComponent({
     props: ['user', 'hours', 'date'],
     data() {
         return {
-            now: moment().format('YYYY-MM-DD'),
+            now: moment('', 'YYYY-MM-DD', 'tr').format('YYYY-MM-DD'),
             bool: '',
             form: this.$inertia.form({
                 user_id: this.user.id,
@@ -139,14 +139,14 @@ export default defineComponent({
         selectDate() {
             this.$inertia.get(this.route('reservation.show', this.form.date), {
                 onSuccess: () => {
-                    this.form.date =this.date
+                    this.form.date = this.date
                 },
             })
         }
     },
     computed: {
         labelDate() {
-            return moment(this?.form?.date).format('LL dddd')
+            return moment(this?.form?.date,'LL dddd','tr').format('LL dddd')
         },
         errors() {
             return this.form?.errors ?? this.$page.props?.error

@@ -18,7 +18,7 @@ class ReservationController extends Controller
      */
     public function index()
     {
-        $items = Reservation::whereUserId(auth()->user()->id)->paginate(5);
+        $items = Reservation::whereUserId(auth()->user()->id)->paginate(5)->onEachSide(1);
         $items = json_decode(json_encode($items), 1);
         return Inertia::render('Reservation', ['items' => $items]);
     }
@@ -68,7 +68,7 @@ class ReservationController extends Controller
         $hours = ReservationHours::all();
         foreach ($hours as $k => $v) {
             $control = Reservation::where('date', $date)->whereJsonContains('hour', $v['hours'])->count();
-            $v['isActive'] = $control ? false : true;
+            $v['isActive'] = $control;
             $resData[] = $v;
         }
         return Inertia::render('_Back/Reservation/CreateReservation', ['hours' => $resData, 'date' => $date]);

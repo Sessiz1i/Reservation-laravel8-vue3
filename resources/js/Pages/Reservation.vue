@@ -28,5 +28,11 @@ export default defineComponent({
         AppLayout,
         Welcome,
     },
+    provide(){
+        return{
+            items: this.$page.props.items,
+            user: this.$page.props.user
+        }
+    }
 })
 </script>
